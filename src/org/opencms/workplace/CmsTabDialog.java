@@ -193,6 +193,9 @@ public abstract class CmsTabDialog extends CmsDialog {
         while (i.hasNext()) {
             // build a tab entry
             String curTab = i.next();
+            int cn_len = (" " + curTab + " ").split("[\u4e00-\u9fa5\ufe30-\uffa0]").length - 1;
+            cn_len = cn_len < 0 ? 0 : cn_len;
+            int len = curTab.length() + cn_len;
             String curTabLink = "javascript:openTab('" + counter + "');";
             if (counter == activeTab) {
                 // create the currently active tab
@@ -205,7 +208,7 @@ public abstract class CmsTabDialog extends CmsDialog {
                 }
                 result.append(">");
                 result.append("<span class=\"tabactive\" unselectable=\"on\"");
-                result.append(" style=\"width: " + ((curTab.length() * 8) + addDelta) + "px;\"");
+                result.append(" style=\"width: " + ((len * 8) + addDelta) + "px;\"");
                 result.append(">");
                 result.append(curTab);
                 result.append("</span></td>\n");
@@ -214,7 +217,7 @@ public abstract class CmsTabDialog extends CmsDialog {
                 // create an inactive tab
                 result.append("\t<td class=\"dialogtab\" unselectable=\"on\">");
                 result.append("<a class=\"tab\" href=\"" + curTabLink + "\"");
-                result.append(" style=\"width: " + (curTab.length() * 8) + "px;\"");
+                result.append(" style=\"width: " + (len * 8) + "px;\"");
                 result.append(">");
                 result.append(curTab);
                 result.append("</a></td>\n");
