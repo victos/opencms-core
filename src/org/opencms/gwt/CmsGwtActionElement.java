@@ -19,7 +19,7 @@
  *
  * For further information about OpenCms, please see the
  * project website: http://www.opencms.org
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -38,6 +38,7 @@ import org.opencms.workplace.CmsWorkplace;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,9 +50,9 @@ import com.google.gwt.user.server.rpc.RPC;
 
 /**
  * Sitemap action used to generate the sitemap editor.<p>
- * 
+ *
  * see jsp file <tt>/system/modules/org.opencms.ade.sitemap/sitemap.jsp</tt>.<p>
- * 
+ *
  * @since 8.0.0
  */
 public class CmsGwtActionElement extends CmsJspActionElement {
@@ -73,10 +74,10 @@ public class CmsGwtActionElement extends CmsJspActionElement {
 
     /**
      * Constructor.<p>
-     * 
+     *
      * @param context the JSP page context object
-     * @param req the JSP request 
-     * @param res the JSP response 
+     * @param req the JSP request
+     * @param res the JSP response
      */
     public CmsGwtActionElement(PageContext context, HttpServletRequest req, HttpServletResponse res) {
 
@@ -85,10 +86,10 @@ public class CmsGwtActionElement extends CmsJspActionElement {
 
     /**
      * Returns the script tag for the "*.nocache.js".<p>
-     * 
+     *
      * @param moduleName the module name to get the script tag for
      * @param moduleVersion the module version
-     * 
+     *
      * @return the <code>"&lt;script&gt;"</code> tag for the "*.nocache.js".<p>
      */
     public static String createNoCacheScript(String moduleName, String moduleVersion) {
@@ -104,13 +105,13 @@ public class CmsGwtActionElement extends CmsJspActionElement {
 
     /**
      * Serializes the result of the given method for RPC-prefetching.<p>
-     * 
-     * @param name the dictionary name 
+     *
+     * @param name the dictionary name
      * @param method the method
      * @param data the result to serialize
-     * 
+     *
      * @return the serialized data
-     * 
+     *
      * @throws SerializationException if something goes wrong
      */
     public static String exportDictionary(String name, Method method, Object data) throws SerializationException {
@@ -120,10 +121,10 @@ public class CmsGwtActionElement extends CmsJspActionElement {
 
     /**
      * Exports a dictionary by the given name as the content attribute of a meta tag.<p>
-     * 
+     *
      * @param name the dictionary name
      * @param data the data
-     * 
+     *
      * @return the meta tag
      */
     public static String exportDictionary(String name, String data) {
@@ -135,11 +136,11 @@ public class CmsGwtActionElement extends CmsJspActionElement {
 
     /**
      * Generates the HTML for a meta tag with given name and content.<p>
-     * 
-     * @param name the name of the meta tag 
-     * @param data the content of the meta tag 
-     * 
-     * @return the HTML for the meta tag 
+     *
+     * @param name the name of the meta tag
+     * @param data the content of the meta tag
+     *
+     * @return the HTML for the meta tag
      */
     public static String exportMeta(String name, String data) {
 
@@ -150,12 +151,12 @@ public class CmsGwtActionElement extends CmsJspActionElement {
 
     /**
      * Serializes the result of the given method for RPC-prefetching.<p>
-     * 
+     *
      * @param method the method
      * @param data the result to serialize
-     * 
+     *
      * @return the serialized data
-     * 
+     *
      * @throws SerializationException if something goes wrong
      */
     public static String serialize(Method method, Object data) throws SerializationException {
@@ -166,24 +167,22 @@ public class CmsGwtActionElement extends CmsJspActionElement {
     }
 
     /**
-     * Wraps the given buffer with surrounding script tags.<p> 
-     * 
-     * @param sb the string buffer to wrap
-     * 
+     * Wraps the given string with surrounding script tags.<p>
+     *
+     * @param sb the string  to wrap
+     *
      * @return the string buffer
      */
-    public static StringBuffer wrapScript(StringBuffer sb) {
+    public static String wrapScript(String... s) {
 
-        sb.insert(0, SCRIPT_TAG_OPEN);
-        sb.append(SCRIPT_TAG_CLOSE).append("\n");
-        return sb;
+        return SCRIPT_TAG_OPEN + CmsStringUtil.listAsString(Arrays.asList(s), "") + SCRIPT_TAG_CLOSE;
     }
 
     /**
      * Returns the script tag for the "*.nocache.js".<p>
-     * 
+     *
      * @param moduleName the module name to get the script tag for
-     * 
+     *
      * @return the <code>"&lt;script&gt;"</code> tag for the "*.nocache.js".<p>
      */
     @Deprecated
@@ -194,10 +193,10 @@ public class CmsGwtActionElement extends CmsJspActionElement {
 
     /**
      * Returns the serialized data for the core provider wrapped in a script tag.<p>
-     *  
+     *
      * @return the data
-     * 
-     * @throws Exception if something goes wrong 
+     *
+     * @throws Exception if something goes wrong
      */
     public String export() throws Exception {
 
@@ -206,11 +205,11 @@ public class CmsGwtActionElement extends CmsJspActionElement {
 
     /**
      * Returns the serialized data for the core provider wrapped into a script tag.<p>
-     * 
-     * @param iconCssClassPrefix the prefix for icon css class rules 
-     * 
+     *
+     * @param iconCssClassPrefix the prefix for icon css class rules
+     *
      * @return the data
-     * 
+     *
      * @throws Exception if something goes wrong
      */
     public String export(String iconCssClassPrefix) throws Exception {
@@ -227,10 +226,15 @@ public class CmsGwtActionElement extends CmsJspActionElement {
 
         // print out the missing permutation message to be used from the nocache.js generated by custom linker
         // see org.opencms.gwt.linker.CmsIFrameLinker
-        sb.append("var ").append(CMS_NO_PERMUTATION_MESSAGE).append("='").append(
-            Messages.get().getBundle(OpenCms.getWorkplaceManager().getWorkplaceLocale(getCmsObject())).key(
-                Messages.ERR_NO_PERMUTATION_AVAILABLE_0)).append("';\n");
-        wrapScript(sb);
+        sb.append(
+            wrapScript(
+                "var ",
+                CMS_NO_PERMUTATION_MESSAGE,
+                "='",
+                Messages.get().getBundle(OpenCms.getWorkplaceManager().getWorkplaceLocale(getCmsObject())).key(
+                    Messages.ERR_NO_PERMUTATION_AVAILABLE_0),
+                "';\n"));
+
         String prefetchedData = exportDictionary(
             CmsCoreData.DICT_NAME,
             I_CmsCoreService.class.getMethod("prefetch"),
@@ -246,9 +250,9 @@ public class CmsGwtActionElement extends CmsJspActionElement {
 
     /**
      * Returns the serialized data for the core provider.<p>
-     * 
+     *
      * @return the data
-     * 
+     *
      * @throws Exception if something goes wrong
      */
     public String exportAll() throws Exception {
@@ -258,12 +262,12 @@ public class CmsGwtActionElement extends CmsJspActionElement {
 
     /**
      * Exports everything, using the given CSS selector prefix.<p>
-     *   
+     *
      * @param cssIconClassPrefix the CSS selector prefix
-     *  
+     *
      * @return the exported data
-     * 
-     * @throws Exception if something goes wrong 
+     *
+     * @throws Exception if something goes wrong
      */
     public String exportAll(String cssIconClassPrefix) throws Exception {
 
@@ -271,7 +275,7 @@ public class CmsGwtActionElement extends CmsJspActionElement {
     }
 
     /**
-     * Returns the needed server data for client-side usage.<p> 
+     * Returns the needed server data for client-side usage.<p>
      *
      * @return the needed server data for client-side usage
      */
@@ -285,7 +289,7 @@ public class CmsGwtActionElement extends CmsJspActionElement {
 
     /**
      * Returns the workplace locale for the current user.<p>
-     * 
+     *
      * @return the workplace locale
      */
     public Locale getWorkplaceLocale() {
@@ -295,10 +299,10 @@ public class CmsGwtActionElement extends CmsJspActionElement {
 
     /**
      * Generates the link to the icon CSS JSP, and appends a "prefix" request parameter with the given value.<p>
-     * 
-     * @param prefix the value to put into the "prefix" request parameter 
-     * 
-     * @return the link to the icon CSS 
+     *
+     * @param prefix the value to put into the "prefix" request parameter
+     *
+     * @return the link to the icon CSS
      */
     private String iconCssLink(String prefix) {
 
@@ -307,7 +311,7 @@ public class CmsGwtActionElement extends CmsJspActionElement {
             try {
                 param = "?prefix=" + URLEncoder.encode(prefix, OpenCms.getSystemInfo().getDefaultEncoding());
             } catch (UnsupportedEncodingException e) {
-                //ignore, default encoding should be available 
+                //ignore, default encoding should be available
             }
         }
         return link(ICON_CSS_URI) + param;
